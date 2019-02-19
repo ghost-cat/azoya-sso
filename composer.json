@@ -1,5 +1,5 @@
 {
-    "name": "ghost-cat/azoya_sso",
+    "name": "ghost-cat/azoya-sso",
     "description": "azoya sso",
     "type": "library",
     "require": {
