@@ -100,7 +100,7 @@ SSOClient::menuHasAccess($menuRoute);
 
 获取授权站点数据，返回数据为 `array` 类型
 ```php
-$menu = SSOClient::sites();
+$sites = SSOClient::sites();
 ```
 返回数据转为 json 如下：
 ```json
@@ -124,7 +124,7 @@ $menu = SSOClient::sites();
 
 退出登录
 ```php
-$menu = SSOClient::logout();
+SSOClient::logout();
 ```
 
 
