@@ -135,7 +135,7 @@ SSOClient::logout();
 ```php
 <?php
 
-namespace backend\components;
+namespace app\components;
 
 use Yii;
 use yii\web\Response;
@@ -200,7 +200,7 @@ class SSOFilter extends ActionFilter
 ```php
 <?php
 
-namespace backend\controllers;
+namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
