@@ -316,6 +316,9 @@ class Client
 
     /**
      * 菜单权限验证
+     *
+     * @param $route string 菜单标识
+     * @return bool
     **/
     protected function menuHasAccess($route)
     {
@@ -326,6 +329,28 @@ class Client
         $permissions = $this->permissions();
         if (is_array($permissions)) {
             if (isset($permissions[$route]) && $permissions[$route] == '1') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 菜单权限验证
+     *
+     * @param $siteId int 站点ID
+     * @return bool
+    **/
+    protected function siteHasAccess($siteId)
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $sites = $this->sites();
+        foreach ($sites as $site) {
+            if ($site['id'] == $siteId) {
                 return true;
             }
         }

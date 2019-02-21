@@ -98,6 +98,13 @@ SSOClient::menuHasAccess($menuRoute);
 
 
 
+判断站点是否有权限，返回 `bool` 类型；$siteId 就是各个站点的 website id
+```php
+SSOClient::siteHasAccess($siteId);
+```
+
+
+
 获取授权站点数据，返回数据为 `array` 类型
 ```php
 $sites = SSOClient::sites();
