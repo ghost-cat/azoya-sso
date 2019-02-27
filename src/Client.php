@@ -52,15 +52,23 @@ class Client
         if ( !$session->isActive) { $session->open(); }
 
         $this->ssoToken = $session->get('sso_token');
-
-        if (! $session->has('sso_user')) {
-            $this->initSSOInfo();
-        }
     }
 
     public static function __callStatic($method, $parameters)
     {
         return (new static)->$method(...$parameters);
+    }
+
+    /**
+     * init sso info
+     *
+     * @return void
+     **/
+    private function initUser()
+    {
+        if (! Yii::$app->session->has('sso_user') && Yii::$app->session->has('sso_token')) {
+            $this->getInfoFromSSO();
+        }
     }
 
     /**
@@ -148,6 +156,7 @@ class Client
      **/
     protected function user()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_user')) {
             return null;
         }
@@ -162,6 +171,7 @@ class Client
      **/
     protected function userId()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_user')) {
             return null;
         }
@@ -178,6 +188,7 @@ class Client
      **/
     protected function userName()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_user')) {
             return null;
         }
@@ -194,6 +205,7 @@ class Client
      **/
     protected function isSuperUser()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_user')) {
             return false;
         }
@@ -209,6 +221,7 @@ class Client
      **/
     protected function menu()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_menu')) {
             return null;
         }
@@ -223,6 +236,7 @@ class Client
      **/
     protected function permissions()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_permissions')) {
             return [];
         }
@@ -237,6 +251,7 @@ class Client
      **/
     protected function sites()
     {
+        $this->initUser();
         if (! Yii::$app->session->has('sso_sites')) {
             return [];
         }
@@ -245,11 +260,11 @@ class Client
     }
 
     /**
-     * 初始化 sso 用户信息
+     * 获取用户信息
      *
      * @return array|null
      **/
-    protected function initSSOInfo()
+    protected function getInfoFromSSO()
     {
         $host = $this->ssoHost . self::SSO_USER_URI;
         $resJson = $this->curl('GET', $host, ['sso_token' => $this->ssoToken]);
