@@ -111,7 +111,7 @@ class Client
     protected function syncUrl()
     {
         $callback = Url::base(true) . '/sso/sync';
-        $to = Yii::$app->request->url;
+        $to = base64_encode(Yii::$app->request->url);
 
         return $this->ssoHost . self::SSO_SYNC_URI . '?callback=' . $callback . '&to=' . $to;
     }

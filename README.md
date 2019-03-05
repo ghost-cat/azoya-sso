@@ -154,10 +154,6 @@ class SSOFilter extends ActionFilter
 
     public function beforeAction($action)
     {
-        if (Yii::$app->request->isAjax) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-        }
-
         // 同步 sso_token
         if (!SSOClient::hasToken()) {
             Yii::$app->controller->redirect(SSOClient::syncUrl());
@@ -228,7 +224,7 @@ class SsoController extends Controller
             $to = Yii::$app->request->get('to');
             Yii::$app->session->set('sso_token', $token);
 
-            $to = !empty($to) ? $to : '/site/index';
+            $to = !empty($to) ? base64_decode($to) : '/site/index';
             
             return $this->redirect($to);
         } catch (\Exception $e) {
