@@ -204,6 +204,9 @@ class SSOFilter extends ActionFilter
             return false;
         }
         
+        // 设置语言
+        Yii::$app->language = SSOClient::language();
+        
         return parent::beforeAction($action);
     }
 
@@ -216,8 +219,8 @@ class SSOFilter extends ActionFilter
 
 
 
-
 `BaseController` 引用 `SSOFilter` 过滤器，其他所有控制器继承 `BaseController` 开发
+
 ```php
     /**
      * sso filter
@@ -232,17 +235,6 @@ class SSOFilter extends ActionFilter
                 'except' => ['sso/sync'],
             ],
         ];
-    }
-
-    /*
-     * init function
-     */
-    public function init()
-    {
-        parent::init();
-
-        // 设置语言
-        Yii::$app->language = SSOClient::language();
     }
 ```
 
