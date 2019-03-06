@@ -129,9 +129,47 @@ $sites = SSOClient::sites();
 
 
 
+批量查询用户数据， `userIds` 类型为数组；用于列表显示操作人姓名
+```php
+$sites = SSOClient::users($userIds);
+```
+返回数据转为 json 如下：
+```json
+[
+    {
+        "id":"25",
+        "name":"admin"
+    },
+    {
+        "id":"26",
+        "name":"huan"
+    },
+    {
+        "id":"33",
+        "name":"test"
+    }
+]
+```
+
+
+
 退出登录
 ```php
 SSOClient::logout();
+```
+
+
+
+获取语言
+```php
+SSOClient::language();
+```
+
+
+
+设置语言，`language` 的值目前只支持 `zh-CN` 和 `en-US`
+```php
+SSOClient::setLanguage($language);
 ```
 
 
@@ -195,6 +233,17 @@ class SSOFilter extends ActionFilter
             ],
         ];
     }
+
+    /*
+     * init function
+     */
+    public function init()
+    {
+        parent::init();
+
+        // 设置语言
+        Yii::$app->language = SSOClient::language();
+    }
 ```
 
 
@@ -206,10 +255,9 @@ class SSOFilter extends ActionFilter
 namespace app\controllers;
 
 use Yii;
-use yii\web\Controller;
 use AzoyaSso\Client as SSOClient;
 
-class SsoController extends Controller
+class SsoController extends BaseController
 {
 
     /**
@@ -243,6 +291,24 @@ class SsoController extends Controller
         SSOClient::logout();
 
         return $this->redirect(SSOClient::loginUrl());
+    }
+
+    /**
+     * 选择语言
+     *
+     * @return json
+     **/
+    public function actionSetLanguage()
+    {
+        try {
+            $language = Yii::$app->request->post('language');
+            SSOClient::setLanguage($language);
+
+            return $this->returnJson(200, '设置成功');
+        } catch (\Exception $e) {
+
+            return $this->returnJson($e->getCode(), $e->getMessage());
+        }
     }
 }
 ```

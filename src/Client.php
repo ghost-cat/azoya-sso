@@ -23,6 +23,8 @@ class Client
     const SSO_LOGOUT_URI = '/sso-api/logout';
     const SSO_SYNC_URI = '/sso-api/sync';
     const SSO_AJAX_SYNC_URI = '/sso-api/ajax-sync';
+    const SSO_SET_LANGUAGE_URI = '/sso-api/set-language';
+    const SSO_USERS_URI = '/sso-api/users';
 
     /**
      * 构造函数
@@ -139,6 +141,7 @@ class Client
 
         $res = json_decode($resJson, true);
         if ($res['status'] == 200) {
+            Yii::$app->session->set('sso_language', $res['data']['language']);
             return true;
         } elseif ($res['status'] == 402) {
             
@@ -215,6 +218,20 @@ class Client
     }
 
     /**
+     * 获取当前用户语言
+     *
+     * @return string
+     **/
+    protected function language()
+    {
+        if (! Yii::$app->session->has('sso_language')) {
+            return null;
+        }
+
+        return Yii::$app->session->get('sso_language');
+    }
+
+    /**
      * 获取菜单信息
      *
      * @return array|null
@@ -260,6 +277,26 @@ class Client
     }
 
     /**
+     * 获取多个用户信息
+     *
+     * @param $userIds array 用户id
+     * @return array|null
+     **/
+    protected function users($userIds)
+    {
+        $host = $this->ssoHost . self::SSO_USERS_URI;
+
+        $resJson = $this->curl('POST', $host, ['sso_token' => $this->ssoToken, 'user_ids' => implode(',', $userIds)]);
+        $res = json_decode($resJson, true);
+        if ($res['status'] == 200) {
+
+            return $res['data'];
+        }
+
+        throw new \Exception($res['message'], $res['status']);
+    }
+
+    /**
      * 获取用户信息
      *
      * @return array|null
@@ -302,6 +339,27 @@ class Client
         $resJson = $this->curl('GET', $host, ['sso_token' => $this->ssoToken]);
         $res = json_decode($resJson, true);
         if ($res['status'] == 200) {
+            return true;
+        }
+
+        throw new \Exception($res['message'], $res['status']);
+    }
+
+    /**
+     * 设置语言
+     *
+     * @param $language string 语言
+     * @return bool
+     **/
+    protected function setLanguage($language)
+    {
+        $host = $this->ssoHost . self::SSO_SET_LANGUAGE_URI;
+
+        $resJson = $this->curl('POST', $host, ['sso_token' => $this->ssoToken, 'language' => $language]);
+        $res = json_decode($resJson, true);
+        if ($res['status'] == 200) {
+            Yii::$app->session->set('sso_language', $language);
+
             return true;
         }
 
