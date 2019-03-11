@@ -192,13 +192,23 @@ class SSOFilter extends ActionFilter
 
     public function beforeAction($action)
     {
+        
         // 同步 sso_token
         if (!SSOClient::hasToken()) {
-            Yii::$app->controller->redirect(SSOClient::syncUrl());
-        } elseif (!SSOClient::isLogin()) {
-            Yii::$app->controller->redirect(SSOClient::loginUrl());
-        } elseif (!SSOClient::hasAccess('/' . Yii::$app->request->pathInfo)) {
+            return Yii::$app->controller->redirect(SSOClient::syncUrl());
+        }
 
+        // token 状态判断
+        $tokenStatus = SSOClient::tokenStatus();
+        if ($tokenStatus == SSOClient::SSO_TOKEN_INVALID) {
+            // token 无效，同步token
+            return Yii::$app->controller->redirect(SSOClient::syncUrl());
+        } elseif ($tokenStatus == SSOClient::SSO_TOKEN_NOTLOGIN) {
+            // token 未登录
+            return Yii::$app->controller->redirect(SSOClient::loginUrl());
+        }
+
+        if (!SSOClient::hasAccess('/' . Yii::$app->request->pathInfo)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             Yii::$app->response->data = ['status' => 403, 'message' => '没有权限'];
             return false;

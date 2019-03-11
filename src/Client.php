@@ -26,6 +26,10 @@ class Client
     const SSO_SET_LANGUAGE_URI = '/sso-api/set-language';
     const SSO_USERS_URI = '/sso-api/users';
 
+    const SSO_TOKEN_OK = 200;
+    const SSO_TOKEN_NOTLOGIN = 402;
+    const SSO_TOKEN_INVALID = 419;
+
     /**
      * 构造函数
      *
@@ -129,27 +133,30 @@ class Client
     }
 
     /**
-     * 判断是否登录
+     * 校验token是否有效 并判断是否登录
      *
      * @return bool
      **/
-    protected function isLogin()
+    protected function tokenStatus()
     {
         $host = $this->ssoHost . self::SSO_ISLOGIN_URI;
 
         $resJson = $this->curl('GET', $host, ['sso_token' => $this->ssoToken]);
 
         $res = json_decode($resJson, true);
-        if ($res['status'] == 200) {
+        if ($res['status'] == self::SSO_TOKEN_OK) {
             Yii::$app->session->set('sso_language', $res['data']['language']);
-            return true;
-        } elseif ($res['status'] == 402) {
-            
+        } elseif ($res['status'] == self::SSO_TOKEN_NOTLOGIN) {
             Yii::$app->session->remove('sso_token');
             Yii::$app->session->remove('sso_user');
+        } elseif ($res['status'] == self::SSO_TOKEN_INVALID) {
+            Yii::$app->session->remove('sso_token');
+            Yii::$app->session->remove('sso_user');
+        } else {
+            throw new \Exception('sso server return error', 500);
         }
 
-        return false;
+        return intval($res['status']);
     }
 
     /**
