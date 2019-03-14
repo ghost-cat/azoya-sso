@@ -70,13 +70,6 @@ $url = SSOClient::homeUrl();
 
 
 
-判断当前是否登录，返回 `bool` 类型
-```php
-SSOClient::isLogin();
-```
-
-
-
 判断当前路由是否有权限，返回 `bool` 类型；参数 `route` 为当前地址去除host和参数部分，比如地址是 `http://www.azoya-sso.com/role/edit?id=16`，则该地址的`route` 为 `/role/edit`
 ```php
 SSOClient::hasAccess($route);
