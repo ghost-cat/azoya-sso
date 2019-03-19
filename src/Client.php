@@ -25,6 +25,7 @@ class Client
     const SSO_AJAX_SYNC_URI = '/sso-api/ajax-sync';
     const SSO_SET_LANGUAGE_URI = '/sso-api/set-language';
     const SSO_USERS_URI = '/sso-api/users';
+    const SSO_USER_BY_NAME_URI = '/sso-api/user-by-name';
 
     const SSO_TOKEN_OK = 200;
     const SSO_TOKEN_NOTLOGIN = 402;
@@ -294,6 +295,26 @@ class Client
         $host = $this->ssoHost . self::SSO_USERS_URI;
 
         $resJson = $this->curl('POST', $host, ['sso_token' => $this->ssoToken, 'user_ids' => implode(',', $userIds)]);
+        $res = json_decode($resJson, true);
+        if ($res['status'] == 200) {
+
+            return $res['data'];
+        }
+
+        throw new \Exception($res['message'], $res['status']);
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param $name string 用户名称
+     * @return array|null
+     **/
+    protected function userByName($name)
+    {
+        $host = $this->ssoHost . self::SSO_USER_BY_NAME_URI;
+
+        $resJson = $this->curl('GET', $host, ['sso_token' => $this->ssoToken, 'name' => $name]);
         $res = json_decode($resJson, true);
         if ($res['status'] == 200) {
 

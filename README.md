@@ -146,6 +146,24 @@ $sites = SSOClient::users($userIds);
 
 
 
+根据用户姓名查找用户（精确查询），为空时返回 `null`
+```php
+$user = SSOClient::userByName($name);
+```
+返回数据转为 json 如下：
+```json
+{
+    "id":25,
+    "name":"admin",
+    "username":"admin@admin.com",
+    "department":"研发中心",
+    "position":"php",
+    "phone_number":"15712176565"
+}
+```
+
+
+
 退出登录
 ```php
 SSOClient::logout();
