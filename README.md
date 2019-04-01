@@ -124,7 +124,7 @@ $sites = SSOClient::sites();
 
 批量查询用户数据， `userIds` 类型为数组；用于列表显示操作人姓名
 ```php
-$sites = SSOClient::users($userIds);
+$users = SSOClient::users($userIds);
 ```
 返回数据转为 json 如下：
 ```json
